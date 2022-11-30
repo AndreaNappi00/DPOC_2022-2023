@@ -26,7 +26,4 @@ def ComputeStageCosts(stateSpace, map_world, K):
     """
     
     G =np.ones((K,Constants.L))
-
-
-    
     return G
