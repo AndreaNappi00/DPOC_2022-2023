@@ -28,7 +28,7 @@ if __name__ == "__main__":
         map_world = GenerateWorld(Constants.M, Constants.N)
     else:
         # We can load a pre-generated map_world
-        data = scipy.io.loadmat('exampleWorld_1.mat')
+        data = scipy.io.loadmat('exampleWorld_3.mat')
         map_world = data["map"]
     MakePlots(map_world)
 
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     # Set the following to True as you progress with the files
     terminalStateIndexImplemented = True
     transitionProbabilitiesImplemented = True
-    stageCostsImplemented = False
+    stageCostsImplemented = True
     SolutionImplemented = False
 
     # Compute the terminal state index

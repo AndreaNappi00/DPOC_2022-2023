@@ -23,16 +23,6 @@ def ComputeTerminalStateIndex(stateSpace, map_world):
               stateSpace matrix
 
     """
-#     for i in range(0,M):
-#       for j in range(0,N):
-#             if map_world[i][j] == LAB:
-#                   m = i
-#                   n = j
-
-
     m,n = np.where(map_world == Constants.LAB)
-    dim = np.size(stateSpace,0)
-    for i in range(0,dim):
-      if stateSpace[i][0]==m and stateSpace[i][1]==n and stateSpace[i][2]==1 and stateSpace[i][3]==0:
-            stateIndex = i
-    return stateIndex
+
+    return np.where((stateSpace == np.array([m,n,1,0])).all(axis=1))[0][0]

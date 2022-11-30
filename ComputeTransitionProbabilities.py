@@ -27,10 +27,10 @@ def near_alien(m,n,m1,n1,psi):
             return 0
       for i in range(len(m)):
             if possible_to_walk_up_upper(m1, n1, 1):
-                  if n1+1 == n[1] and m1 == m[i]:
+                  if n1+1 == n[i] and m1 == m[i]:
                         num=num+1
             else:
-                  if n1-1 == n[1] and m1 == m[i]:
+                  if n1-1 == n[i] and m1 == m[i]:
                         num=num+1
             if m1+1 == m[i] and n1 == n[i]:
                   num=num+1
@@ -91,6 +91,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
     m_mine,n_mine= np.where(map_world == Constants.MINE)        
     m_obstacle,n_obstacle = np.where(map_world == Constants.OBSTACLE)
     m_alien,n_alien = np.where(map_world == Constants.ALIEN)
+    i_terminal = np.where((stateSpace == np.array([m_lab,n_lab,1,0])).all(axis=1))[0][0]
     P_DISTURBED = Constants.P_DISTURBED
     P_PROTECTED = Constants.P_PROTECTED
     S = Constants.S
@@ -99,7 +100,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
     M = Constants.M
     P = np.zeros((K,K,L))
 
-    def move_disturbed(m_arriv, n_arriv, psi_arriv, phi_arriv, azione, p_prec):
+    def move_disturbed(m_arriv, n_arriv, psi_arriv, phi_arriv, azione, p_prec, fought):
       Prb = {}
       north = possible_to_walk_up_upper(m_arriv,n_arriv,psi_arriv)
       j_base = np.where((stateSpace == np.array([m_base,n_base,0,0])).all(axis=1))[0][0]
@@ -113,8 +114,10 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   phi_lotta = - 1
 
                   numb_alien = near_alien(m_alien, n_alien, m_arriv, n_arriv+1, psi_end)     #1b
-                  if numb_alien and phi_end:
-                        phi_lotta = 0
+                  if numb_alien:
+                        phi_lotta = phi_end-1
+                        if not fought:
+                              Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_a*numb_alien*(1-(1-S)*psi_end)*P_DISTURBED/3
 
                   mine = in_mine(m_mine, n_mine, m_arriv, n_arriv+1, psi_end)          #1c
                   if mine:
@@ -129,6 +132,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                         Prb[(i,j_fight,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-P_PROTECTED**numb_alien)*p_prec
             else:       #nord leads to collision and so to start
                   Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
+                  Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
 
       if not north:
             if not not_accessible(m_obstacle, n_obstacle, m_arriv, n_arriv-1):    #south
@@ -138,8 +142,10 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   phi_lotta = - 1
 
                   numb_alien = near_alien(m_alien, n_alien, m_arriv, n_arriv-1, psi_end)     #1b
-                  if numb_alien and phi_end:
-                        phi_lotta = 0
+                  if numb_alien:
+                        phi_lotta = phi_end-1
+                        if not fought:
+                              Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_a*numb_alien*(1-(1-S)*psi_end)*P_DISTURBED/3
 
                   mine = in_mine(m_mine, n_mine, m_arriv, n_arriv-1, psi_end)          #1c
                   if mine:
@@ -154,6 +160,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                         Prb[(i,j_fight,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-P_PROTECTED**numb_alien)*p_prec
             else:       #south leads to collision and so to start
                   Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
+                  Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
             
       
       if not not_accessible(m_obstacle, n_obstacle, m_arriv+1, n_arriv):    #right
@@ -163,8 +170,10 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
             phi_lotta = - 1
 
             numb_alien = near_alien(m_alien, n_alien, m_arriv+1, n_arriv, psi_end)     #1b
-            if numb_alien and phi_end:
-                  phi_lotta = 0
+            if numb_alien:
+                  phi_lotta = phi_end-1
+                  if not fought:
+                        Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_a*numb_alien*(1-(1-S)*psi_end)*P_DISTURBED/3
 
             mine = in_mine(m_mine, n_mine, m_arriv+1, n_arriv, psi_end)          #1c
             if mine:
@@ -179,6 +188,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   Prb[(i,j_fight,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-P_PROTECTED**numb_alien)*p_prec
       else:       #right leads to collision and so to start
             Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
+            Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
 
       if not not_accessible(m_obstacle, n_obstacle, m_arriv-1, n_arriv):      #left
             port = check_if_portal(m_portal, n_portal, m_arriv-1, n_arriv)        #1a
@@ -187,8 +197,10 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
             phi_lotta = - 1
 
             numb_alien = near_alien(m_alien, n_alien, m_arriv-1, n_arriv, psi_end)     #1b
-            if numb_alien and phi_end:
-                  phi_lotta = 0
+            if numb_alien:
+                  phi_lotta = phi_end-1
+                  if not fought:
+                        Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_a*numb_alien*(1-(1-S)*psi_end)*P_DISTURBED/3
 
             mine = in_mine(m_mine, n_mine, m_arriv-1, n_arriv, psi_end)          #1c
             if mine:
@@ -202,7 +214,8 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   j_fight = np.where((stateSpace == np.array([m_arriv-1,n_arriv,phi_lotta,psi_end])).all(axis=1))[0][0]
                   Prb[(i,j_fight,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-P_PROTECTED**numb_alien)*p_prec
       else:       #left leads to collision and so to start
-                  Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
+            Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
+            Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
 
       return Prb
 
@@ -214,11 +227,12 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       #1
       portal = check_if_portal(m_portal, n_portal, m_b, n_b)        #1a
       psi_b = psi_a*(1-portal) + (1-psi_a)*portal
+      Constants.cost_dict[(i,act)] = (1-(1-S)*psi_b)*P_DISTURBED + 1
 
       num_alien = near_alien(m_alien, n_alien, m_b, n_b, psi_b)     #1b
-      if num_alien and phi_b:
-            phi2_lotta = 0
-
+      if num_alien:
+            phi2_lotta = phi_b-1
+            Constants.cost_dict[(i,act)] = Constants.cost_dict[(i,act)] + Constants.N_a*num_alien
       mine = in_mine(m_mine, n_mine, m_b, n_b, psi_b)          #1c
       if mine:
             phi_b = 1
@@ -228,13 +242,17 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       if phi2_lotta != -1:
             j_lotta = np.where((stateSpace == np.array([m_b,n_b,phi2_lotta,psi_b])).all(axis=1))[0][0]
             Prob[(i,j_lotta,act)] = ((1-(1-S)*psi_b)*P_DISTURBED)*(1-P_PROTECTED**num_alien)
-            Prob_dist_lotta = move_disturbed(m_b, n_b, psi_b, phi2_lotta, act, (1-P_PROTECTED**num_alien))
-            Prob.update(Prob_dist_lotta)
+            Prob_dist_lotta = move_disturbed(m_b, n_b, psi_b, phi2_lotta, act, (1-P_PROTECTED**num_alien), True)
+            for key in Prob_dist_lotta.keys():
+                  if key not in Prob.keys():
+                        Prob[key] = Prob_dist_lotta[key]
+                  else:
+                        Prob[key] = Prob[key] + Prob_dist_lotta[key]
 
 
       j = np.where((stateSpace == np.array([m_b,n_b,phi_b,psi_b])).all(axis=1))[0][0]
       Prob[(i,j,act)] = ((1-(1-S)*psi_b)*P_DISTURBED)*((P_PROTECTED**num_alien)*(1+phi2_lotta) - (2+phi2_lotta)*phi2_lotta)   #prob of fighting or not and not disturbed
-      Prob_dist = move_disturbed(m_b, n_b, psi_b, phi_b, act, ((P_PROTECTED**num_alien)*(1+phi2_lotta) - (2+phi2_lotta)*phi2_lotta))
+      Prob_dist = move_disturbed(m_b, n_b, psi_b, phi_b, act, ((P_PROTECTED**num_alien)*(1+phi2_lotta) - (2+phi2_lotta)*phi2_lotta),False)
       for key in Prob_dist.keys():
             if key not in Prob.keys():
                   Prob[key] = Prob_dist[key]
@@ -250,43 +268,44 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       psi1=stateSpace[i][3]
       up = possible_to_walk_up_upper(m1,n1,psi1)
 
-      #South
-      action = Constants.SOUTH
-      if not up and not not_accessible(m_obstacle, n_obstacle, m1, n1-1):
-            m2 = m1
-            n2 = n1-1
-            Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
+      if i != i_terminal:           # if not in terminal state then execute
+            #South
+            action = Constants.SOUTH
+            if not up and not not_accessible(m_obstacle, n_obstacle, m1, n1-1):
+                  m2 = m1
+                  n2 = n1-1 
+                  Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
+                  for key in Prob_move.keys():
+                        P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
+
+            action = Constants.NORTH
+            if up and not not_accessible(m_obstacle, n_obstacle, m1, n1+1):
+                  m2 = m1
+                  n2 = n1+1
+                  Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
+                  for key in Prob_move.keys():
+                        P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
+
+            action = Constants.EAST
+            if not not_accessible(m_obstacle, n_obstacle, m1+1, n1):
+                  m2 = m1+1
+                  n2 = n1
+                  Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
+                  for key in Prob_move.keys():
+                        P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
+
+            action = Constants.WEST
+            if not not_accessible(m_obstacle, n_obstacle, m1-1, n1):
+                  m2 = m1-1
+                  n2 = n1
+                  Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
+                  for key in Prob_move.keys():
+                        P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
+
+            action = Constants.STAY
+            Prob_move =move_algorithm(m1,n1,action,psi1,phi1)
             for key in Prob_move.keys():
                   P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
-
-      action = Constants.NORTH
-      if up and not not_accessible(m_obstacle, n_obstacle, m1, n1+1):
-            m2 = m1
-            n2 = n1+1
-            Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
-            for key in Prob_move.keys():
-                  P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
-
-      action = Constants.EAST
-      if not not_accessible(m_obstacle, n_obstacle, m1+1, n1):
-            m2 = m1+1
-            n2 = n1
-            Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
-            for key in Prob_move.keys():
-                  P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
-
-      action = Constants.WEST
-      if not not_accessible(m_obstacle, n_obstacle, m1-1, n1):
-            m2 = m1-1
-            n2 = n1
-            Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
-            for key in Prob_move.keys():
-                  P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
-
-      action = Constants.STAY
-      Prob_move =move_algorithm(m1,n1,action,psi1,phi1)
-      for key in Prob_move.keys():
-            P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
 
     return P
 '''
