@@ -3,6 +3,7 @@ import numpy as np
 import scipy.io
 from GenerateWorld import *
 from MakePlots import *
+import time as t
 
 from ComputeStageCosts import *
 from ComputeTerminalStateIndex import *
@@ -11,11 +12,12 @@ from Constants import *
 from Solution import *
 
 if __name__ == "__main__":
+    
     """
     Set to true to generate a random map of size mapSize, else set to false
     to load the pre-existing example map
     """
-    generateRandomWorld = True
+    generateRandomWorld = False
 
     """
     Generate map
@@ -78,7 +80,10 @@ if __name__ == "__main__":
         """
 
         # TODO: Question b)
+        start = t.time()
         P = ComputeTransitionProbabilities(stateSpace, map_world, K)
+        end = t.time()
+        print(end-start)
     else:
         P = np.zeros((K, K, Constants.L))
 
@@ -94,7 +99,10 @@ if __name__ == "__main__":
         """
 
         # TODO: Question c)
+        start = t.time()
         G = ComputeStageCosts(stateSpace, map_world, K)
+        end = t.time()
+        print(end - start)
     else:
         G = np.ones((K, Constants.L))*np.inf
 
