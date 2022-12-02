@@ -120,6 +120,11 @@ if __name__ == "__main__":
             print('Plot results')
             MakePlots(map_world, stateSpace, J_opt, u_opt_ind, TERMINAL_STATE_INDEX, "Solution")
 
+    print('time to compute j')
+    start = t.time()
+    j = np.where((stateSpace == np.array([0,3,0,0])).all(axis=1))[0][0]
+    end = t.time()
+    print(end - start)
     # Terminated
     print('Terminated - close plots to exit program')
 
