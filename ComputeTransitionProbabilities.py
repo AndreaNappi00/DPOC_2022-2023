@@ -199,7 +199,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   Prb[(i,j_fight,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-P_PROTECTED**numb_alien)*p_prec
       else:       #left leads to collision and so to start
             Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
-            Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
+            Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + (Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-fought)
 
       return Prb
 
@@ -225,7 +225,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       #2
       if phi2_lotta != -1:
             j_lotta = np.where((stateSpace == np.array([m_b,n_b,phi2_lotta,psi_b])).all(axis=1))[0][0]
-            Prob[(i,j_lotta,act)] = ((1-(1-S)*psi_b)*P_DISTURBED)*(1-P_PROTECTED**num_alien)
+            Prob[(i,j_lotta,act)] = (1-(1-(1-S)*psi_b)*P_DISTURBED)*(1-P_PROTECTED**num_alien)
             Prob_dist_lotta = move_disturbed(m_b, n_b, psi_b, phi2_lotta, act, (1-P_PROTECTED**num_alien), True)
             for key in Prob_dist_lotta.keys():
                   if key not in Prob.keys():
@@ -255,6 +255,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       if i != i_terminal:           # if not in terminal state then execute
             #South
             action = Constants.SOUTH
+
             if not up and not not_accessible(m_obstacle, n_obstacle, m1, n1-1):
                   m2 = m1
                   n2 = n1-1 
@@ -285,7 +286,8 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
                   for key in Prob_move.keys():
                         P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
-
+            if i==27:
+                  print('ciao')
             action = Constants.STAY
             Prob_move =move_algorithm(m1,n1,action,psi1,phi1)
             for key in Prob_move.keys():
