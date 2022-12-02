@@ -2,9 +2,6 @@ import numpy as np
 import scipy
 from Constants import *
 
-
-
-
 def check_if_obstacle(m,n,m1,n1):
       for i in range(0,len(m)):
             if m[i]==m1 and n[i]==n1:
@@ -79,7 +76,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       M = M+1
       N_filtered = M*N
       num_obs = num_obs + len(N_filtered[N_filtered<0])
-      j = (m1*Constants.N*4 + n1*4 + 1*phi1+2*psi1) - 4*num_obs
+      j = int((m1*Constants.N*4 + n1*4 + 1*phi1+2*psi1) - 4*num_obs)
       return j
 
     m_lab,n_lab = np.where(map_world == Constants.LAB)
@@ -100,8 +97,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
     def move_disturbed(m_arriv, n_arriv, psi_arriv, phi_arriv, azione, p_prec, fought):
       Prb = {}
       north = possible_to_walk_up_upper(m_arriv,n_arriv,psi_arriv)
-      j_base = np.where((stateSpace == np.array([m_base,n_base,0,0])).all(axis=1))[0][0]
-      #j_base = find_state(m_obstacle,n_obstacle,m_base,n_base,0,0)
+      j_base = find_state(m_obstacle,n_obstacle,m_base,n_base,0,0)
       Prb[(i, j_base ,azione)] = 0
 
       if north:

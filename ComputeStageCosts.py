@@ -25,7 +25,7 @@ def ComputeStageCosts(stateSpace, map_world, K):
                   apply control input l.
     """
     
-    G = np.zeros((K,Constants.L))
+    G = np.inf*np.ones((K,Constants.L))
 
     for key in Constants.cost_dict.keys():
       G[key[0], key[1]] = Constants.cost_dict[key]
