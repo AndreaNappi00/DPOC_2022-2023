@@ -144,7 +144,8 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                         Prb[(i,j_fight,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-P_PROTECTED**numb_alien)*p_prec
             else:       #south leads to collision and so to start
                   Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
-                  Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
+                  if not fought:
+                        Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
             
       
       if not not_accessible(m_obstacle, n_obstacle, m_arriv+1, n_arriv):    #right
@@ -172,7 +173,8 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   Prb[(i,j_fight,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-P_PROTECTED**numb_alien)*p_prec
       else:       #right leads to collision and so to start
             Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
-            Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
+            if not fought:
+                  Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
 
       if not not_accessible(m_obstacle, n_obstacle, m_arriv-1, n_arriv):      #left
             port = check_if_portal(m_portal, n_portal, m_arriv-1, n_arriv)        #1a
@@ -199,7 +201,8 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   Prb[(i,j_fight,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-P_PROTECTED**numb_alien)*p_prec
       else:       #left leads to collision and so to start
             Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
-            Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + (Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-fought)
+            if not fought:
+                  Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + (Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3)
 
       return Prb
 
@@ -286,8 +289,6 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
                   for key in Prob_move.keys():
                         P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
-            if i==27:
-                  print('ciao')
             action = Constants.STAY
             Prob_move =move_algorithm(m1,n1,action,psi1,phi1)
             for key in Prob_move.keys():
