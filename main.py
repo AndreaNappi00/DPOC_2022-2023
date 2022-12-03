@@ -107,6 +107,7 @@ if __name__ == "__main__":
         G = np.ones((K, Constants.L))*np.inf
 
     # Solve the stochastic shortest path problem
+
     if SolutionImplemented:
         print('Solve stochastic shortest path problem')
 
