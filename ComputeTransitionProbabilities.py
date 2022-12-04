@@ -9,11 +9,8 @@ from Constants import *
 #                   return True
 #       return False
       
-def check_if_portal(m,n,m1,n1):
-      for i in range(0,len(m)):
-            if m[i]==m1 and n[i]==n1:
-                  return True
-      return False
+def check_if_portal(portal_pos,m1,n1):
+      return (m1,n1) in portal_pos
 def possible_to_walk_up_upper(m,n, psi):
       if (m+n)%2==0:
             if not psi:
@@ -42,9 +39,9 @@ def near_alien(m,n,m1,n1,psi):
             if m1==m[i] and n1==n[i]:
                   num=num+1
       return num
-def in_mine(m, n, m1, n1, psi1):
-      if m == m1 and n == n1 and psi1 == Constants.LOWER:
-            return True
+def in_mine(mine_pos, m1, n1, psi1):
+      if psi1 == Constants.LOWER:
+            return (m1,n1) in mine_pos
       return False
 def not_accessible(d,m2,n2):
       # if m2 == Constants.M or m2 == -1 or n2 == Constants.N or n2 == -1:
@@ -93,14 +90,18 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
 #       # Constants.state_dict[key1] = j1
 #       return j
     
-    m_lab,n_lab = np.where(map_world == Constants.LAB)
-    m_base,n_base = np.where(map_world == Constants.BASE)
-    m_portal,n_portal = np.where(map_world == Constants.PORTAL) 
-    m_mine,n_mine= np.where(map_world == Constants.MINE)        
+    m_n_lab = np.where(map_world == Constants.LAB)
+    lab_tuple = tuple(zip(m_n_lab[0], m_n_lab[1]))
+    m_n_base = np.where(map_world == Constants.BASE)
+    base_tuple = tuple(zip(m_n_base[0], m_n_base[1]))
+    m_n_portal = np.where(map_world == Constants.PORTAL) 
+    portal_tuple = tuple(zip(m_n_portal[0], m_n_portal[1]))
+    m_n_mine = np.where(map_world == Constants.MINE)        
+    mine_tuple = tuple(zip(m_n_mine[0], m_n_mine[1]))
     state_dict = stateSpace_to_dict()
-    m_alien,n_alien = np.where(map_world == Constants.ALIEN)
+    m_alien, n_alien = np.where(map_world == Constants.ALIEN)
    # i_terminal = find_state(m_obstacle,n_obstacle, m_lab,n_lab,1,0)
-    i_terminal = state_dict[(m_lab[0],n_lab[0],1,0)]
+    i_terminal = state_dict[(lab_tuple[0][0],lab_tuple[0][1],1,0)]
     P_DISTURBED = Constants.P_DISTURBED
     P_PROTECTED = Constants.P_PROTECTED
     S = Constants.S
@@ -113,12 +114,12 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       Prb = {}
       north = possible_to_walk_up_upper(m_arriv,n_arriv,psi_arriv)
       #j_base = find_state(m_obstacle,n_obstacle,m_base,n_base,0,0)
-      j_base = state_dict[(m_base[0],n_base[0],0,0)]
+      j_base = state_dict[(base_tuple[0][0],base_tuple[0][1],0,0)]
       Prb[(i, j_base ,azione)] = 0
 
       if north:
             if not not_accessible(state_dict, m_arriv, n_arriv+1):    
-                  port = check_if_portal(m_portal, n_portal, m_arriv, n_arriv+1)        #1a
+                  port = check_if_portal(portal_tuple, m_arriv, n_arriv+1)        #1a
                   psi_end = psi_arriv*(1-port) + (1-psi_arriv)*port
                   phi_end = phi_arriv
                   phi_lotta = - 1
@@ -129,7 +130,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                         if not fought:
                               Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_a*numb_alien*(1-(1-S)*psi_end)*P_DISTURBED/3
 
-                  mine = in_mine(m_mine, n_mine, m_arriv, n_arriv+1, psi_end)          #1c
+                  mine = in_mine(mine_tuple, m_arriv, n_arriv+1, psi_end)          #1c
                   if mine:
                         phi_end = 1
                         phi_lotta = -1
@@ -149,7 +150,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
 
       if not north:
             if not not_accessible(state_dict, m_arriv, n_arriv-1):    #south
-                  port = check_if_portal(m_portal, n_portal, m_arriv, n_arriv-1)        #1a
+                  port = check_if_portal(portal_tuple, m_arriv, n_arriv-1)        #1a
                   psi_end = psi_arriv*(1-port) + (1-psi_arriv)*port
                   phi_end = phi_arriv
                   phi_lotta = - 1
@@ -160,7 +161,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                         if not fought:
                               Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_a*numb_alien*(1-(1-S)*psi_end)*P_DISTURBED/3
 
-                  mine = in_mine(m_mine, n_mine, m_arriv, n_arriv-1, psi_end)          #1c
+                  mine = in_mine(mine_tuple, m_arriv, n_arriv-1, psi_end)          #1c
                   if mine:
                         phi_end = 1
                         phi_lotta = -1
@@ -181,7 +182,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
             
       
       if not not_accessible(state_dict, m_arriv+1, n_arriv):    #right
-            port = check_if_portal(m_portal, n_portal, m_arriv+1, n_arriv)        #1a
+            port = check_if_portal(portal_tuple, m_arriv+1, n_arriv)        #1a
             psi_end = psi_arriv*(1-port) + (1-psi_arriv)*port
             phi_end = phi_arriv
             phi_lotta = - 1
@@ -192,7 +193,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   if not fought:
                         Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_a*numb_alien*(1-(1-S)*psi_end)*P_DISTURBED/3
 
-            mine = in_mine(m_mine, n_mine, m_arriv+1, n_arriv, psi_end)          #1c
+            mine = in_mine(mine_tuple, m_arriv+1, n_arriv, psi_end)          #1c
             if mine:
                   phi_end = 1
                   phi_lotta = -1
@@ -212,7 +213,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
 
       if not not_accessible(state_dict, m_arriv-1, n_arriv):      #left
-            port = check_if_portal(m_portal, n_portal, m_arriv-1, n_arriv)        #1a
+            port = check_if_portal(portal_tuple, m_arriv-1, n_arriv)        #1a
             psi_end = psi_arriv*(1-port) + (1-psi_arriv)*port
             phi_end = phi_arriv
             phi_lotta = - 1
@@ -223,7 +224,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   if not fought:
                         Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_a*numb_alien*(1-(1-S)*psi_end)*P_DISTURBED/3
 
-            mine = in_mine(m_mine, n_mine, m_arriv-1, n_arriv, psi_end)          #1c
+            mine = in_mine(mine_tuple, m_arriv-1, n_arriv, psi_end)          #1c
             if mine:
                   phi_end = 1
                   phi_lotta = -1
@@ -250,7 +251,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       phi2_lotta = -1
 
       #1
-      portal = check_if_portal(m_portal, n_portal, m_b, n_b)        #1a
+      portal = check_if_portal(portal_tuple, m_b, n_b)        #1a
       psi_b = psi_a*(1-portal) + (1-psi_a)*portal
       Constants.cost_dict[(i,act)] = (1-(1-S)*psi_b)*P_DISTURBED + 1
 
@@ -258,7 +259,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       if num_alien:
             phi2_lotta = phi_b-1
             Constants.cost_dict[(i,act)] = Constants.cost_dict[(i,act)] + Constants.N_a*num_alien
-      mine = in_mine(m_mine, n_mine, m_b, n_b, psi_b)          #1c
+      mine = in_mine(mine_tuple, m_b, n_b, psi_b)          #1c
       if mine:
             phi_b = 1
             phi2_lotta = -1
