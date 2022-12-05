@@ -1,14 +1,7 @@
 import numpy as np
 import scipy
 from Constants import *
-
-# def check_if_obstacle(m,n,m1,n1):
-#       if (m1 in m): 
-#             a = np.where(m==m1)
-#             if (n[a]== n1).any():
-#                   return True
-#       return False
-      
+  
 def check_if_portal(portal_pos,m1,n1):
       return (m1,n1) in portal_pos
 def possible_to_walk_up_upper(m,n, psi):
@@ -75,20 +68,6 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       ind = np.arange(K)
       dictionary = dict(zip(state,ind))
       return dictionary
-#     def find_state(m_obstacle1,n_obstacle1,m1 : int,n1 : int,phi1,psi1):  #given that m and n are in the state space
-#       # key1 = (m1,n1,phi1,psi1)
-#       # if key1 in Constants.state_dict.keys():
-#       #       return Constants.state_dict[key1]
-#       M = m_obstacle1-m1
-#       N = n_obstacle1-n1
-#       num_obs = len(M[M<0])
-#       M[M!=0] = -1
-#       M = M+1
-#       N_filtered = M*N
-#       num_obs = num_obs + len(N_filtered[N_filtered<0])
-#       j = int((m1*Constants.N*4 + n1*4 + 1*phi1+2*psi1) - 4*num_obs)
-#       # Constants.state_dict[key1] = j1
-#       return j
     
     m_n_lab = np.where(map_world == Constants.LAB)
     lab_tuple = tuple(zip(m_n_lab[0], m_n_lab[1]))
@@ -109,6 +88,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
     N = Constants.N
     M = Constants.M
     P = np.zeros((K,K,L))
+    P[i_terminal,i_terminal,4] = 1
 
     def move_disturbed(m_arriv, n_arriv, psi_arriv, phi_arriv, azione, p_prec, fought):
       Prb = {}
@@ -135,14 +115,10 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                         phi_end = 1
                         phi_lotta = -1
 
-                  #j_up = np.where((stateSpace == np.array([m_arriv,n_arriv+1,phi_end,psi_end])).all(axis = 1))[0][0]
-                  #j_up = find_state(m_obstacle,n_obstacle,m_arriv,n_arriv+1,phi_end,psi_end)
                   j_up = state_dict[(m_arriv,n_arriv+1,phi_end,psi_end)]
                   Prb[(i,j_up,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*((P_PROTECTED**numb_alien)*(1+phi_lotta) - (2+phi_lotta)*phi_lotta)*p_prec
                   if phi_lotta != -1:
                         j_fight = state_dict[(m_arriv,n_arriv+1,phi_end,psi_end)]
-                        #j_fight = find_state(m_obstacle,n_obstacle,m_arriv,n_arriv+1,phi_end,psi_end)
-                        #j_fight = np.where((stateSpace == np.array([m_arriv,n_arriv+1,phi_lotta,psi_end])).all(axis=1))[0][0]
                         Prb[(i,j_fight,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-P_PROTECTED**numb_alien)*p_prec
             else:       #nord leads to collision and so to start
                   Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
@@ -166,14 +142,10 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                         phi_end = 1
                         phi_lotta = -1
                   j_down = state_dict[(m_arriv,n_arriv-1,phi_end,psi_end)]
-                  #j_down = find_state(m_obstacle,n_obstacle,m_arriv,n_arriv-1,phi_end,psi_end)
-                  #j_down = np.where((stateSpace == np.array([m_arriv,n_arriv-1,phi_end,psi_end])).all(axis=1))[0][0]
 
                   Prb[(i,j_down,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*((P_PROTECTED**numb_alien)*(1+phi_lotta) - (2+phi_lotta)*phi_lotta)*p_prec
                   if phi_lotta != -1:
                         j_fight = state_dict[(m_arriv,n_arriv-1,phi_lotta,psi_end)]
-                        #j_fight = find_state(m_obstacle,n_obstacle,m_arriv,n_arriv-1,phi_lotta,psi_end)
-                        #j_fight = np.where((stateSpace == np.array([m_arriv,n_arriv-1,phi_lotta,psi_end])).all(axis=1))[0][0]
                         Prb[(i,j_fight,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-P_PROTECTED**numb_alien)*p_prec
             else:       #south leads to collision and so to start
                   Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
@@ -198,14 +170,10 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   phi_end = 1
                   phi_lotta = -1
             j_right = state_dict[(m_arriv+1,n_arriv,phi_end,psi_end)]
-            #j_right = find_state(m_obstacle,n_obstacle,m_arriv+1,n_arriv,phi_end,psi_end)
-            #j_right = np.where((stateSpace == np.array([m_arriv+1,n_arriv,phi_end,psi_end])).all(axis=1))[0][0]
 
             Prb[(i,j_right,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*((P_PROTECTED**numb_alien)*(1+phi_lotta) - (2+phi_lotta)*phi_lotta)*p_prec
             if phi_lotta != -1:
                   j_fight = state_dict[(m_arriv+1,n_arriv,phi_lotta,psi_end)]
-                  #j_fight = find_state(m_obstacle,n_obstacle,m_arriv+1,n_arriv,phi_lotta,psi_end)
-                  #j_fight = np.where((stateSpace == np.array([m_arriv+1,n_arriv,phi_lotta,psi_end])).all(axis=1))[0][0]
                   Prb[(i,j_fight,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-P_PROTECTED**numb_alien)*p_prec
       else:       #right leads to collision and so to start
             Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
@@ -229,14 +197,10 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   phi_end = 1
                   phi_lotta = -1
             j_left = state_dict[(m_arriv-1,n_arriv,phi_end,psi_end)]
-            #j_left = find_state(m_obstacle,n_obstacle,m_arriv-1,n_arriv,phi_end,psi_end)
-            #j_left = np.where((stateSpace == np.array([m_arriv-1,n_arriv,phi_end,psi_end])).all(axis=1))[0][0]
 
             Prb[(i,j_left,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*((P_PROTECTED**numb_alien)*(1+phi_lotta) - (2+phi_lotta)*phi_lotta)*p_prec
             if phi_lotta != -1:
                   j_fight = state_dict[(m_arriv-1,n_arriv,phi_lotta,psi_end)]
-                  #j_fight = find_state(m_obstacle,n_obstacle,m_arriv-1,n_arriv,phi_lotta,psi_end)
-                  #j_fight = np.where((stateSpace == np.array([m_arriv-1,n_arriv,phi_lotta,psi_end])).all(axis=1))[0][0]
                   Prb[(i,j_fight,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-P_PROTECTED**numb_alien)*p_prec
       else:       #left leads to collision and so to start
             Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
@@ -267,8 +231,6 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       #2
       if phi2_lotta != -1:
             j_lotta = state_dict[(m_b,n_b,phi2_lotta,psi_b)]
-            #j_lotta = find_state(m_obstacle,n_obstacle,m_b,n_b,phi2_lotta,psi_b)
-            #j_lotta = np.where((stateSpace == np.array([m_b,n_b,phi2_lotta,psi_b])).all(axis=1))[0][0]
             Prob[(i,j_lotta,act)] = (1-(1-(1-S)*psi_b)*P_DISTURBED)*(1-P_PROTECTED**num_alien)
             Prob_dist_lotta = move_disturbed(m_b, n_b, psi_b, phi2_lotta, act, (1-P_PROTECTED**num_alien), True)
             for key in Prob_dist_lotta.keys():
@@ -277,10 +239,6 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   else:
                         Prob[key] = Prob[key] + Prob_dist_lotta[key]
       j = state_dict[(m_b,n_b,phi_b,psi_b)]
-      #j = find_state(m_obstacle,n_obstacle,m_b,n_b,phi_b,psi_b)
-      #j = np.where((stateSpace == np.array([m_b,n_b,phi_b,psi_b])).all(axis=1))[0][0]
-      # print('State ',m_b,' ',n_b, ' ',phi_b,' ',psi_b,' is at index ',j)
-      # print('State ',m_b,' ',n_b, ' ',phi_b,' ',psi_b,' found with function is at index ',find_state(m_obstacle,n_obstacle,m_b,n_b,phi_b,psi_b))
       Prob[(i,j,act)] = (1-(1-(1-S)*psi_b)*P_DISTURBED)*((P_PROTECTED**num_alien)*(1+phi2_lotta) - (2+phi2_lotta)*phi2_lotta)   #prob of fighting or not and not disturbed
       Prob_dist = move_disturbed(m_b, n_b, psi_b, phi_b, act, ((P_PROTECTED**num_alien)*(1+phi2_lotta) - (2+phi2_lotta)*phi2_lotta),False)
       for key in Prob_dist.keys():

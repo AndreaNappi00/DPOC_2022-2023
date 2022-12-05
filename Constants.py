@@ -1,8 +1,8 @@
 class Constants:
     #M = 19
     #N = 11
-    M = 30
-    N = 15
+    M = 16
+    N = 8
     mapSize = [M, N]
 
     # Plotting options

@@ -30,7 +30,7 @@ if __name__ == "__main__":
         map_world = GenerateWorld(Constants.M, Constants.N)
     else:
         # We can load a pre-generated map_world
-        data = scipy.io.loadmat('exampleWorld_3.mat')
+        data = scipy.io.loadmat('exampleWorld_1.mat')
         map_world = data["map"]
     MakePlots(map_world)
 
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     terminalStateIndexImplemented = True
     transitionProbabilitiesImplemented = True
     stageCostsImplemented = True
-    SolutionImplemented = False
+    SolutionImplemented = True
 
     # Compute the terminal state index
     if terminalStateIndexImplemented:
@@ -122,10 +122,7 @@ if __name__ == "__main__":
             MakePlots(map_world, stateSpace, J_opt, u_opt_ind, TERMINAL_STATE_INDEX, "Solution")
 
     print('time to compute j')
-    start = t.time()
-    j = np.where((stateSpace == np.array([0,3,0,0])).all(axis=1))[0][0]
-    end = t.time()
-    print(end - start)
+    
     # Terminated
     print('Terminated - close plots to exit program')
 
