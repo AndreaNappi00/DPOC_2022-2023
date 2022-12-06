@@ -37,17 +37,17 @@ def Solution(P, G, K, TERMINAL_STATE_INDEX):
     policy = 4*np.ones((K,1), dtype=int)
     equal = False
 
-    epsilon = 1
+    epsilon = 0.1
 
-    #mu_star = np.zeros((5,1))
-    #P_star = np.zeros((K,K,1))
-    #G_star = np.zeros((K,1))
-    #for i in range(K):
-    #    mu_star[policy[i]] = 1
-    #   P_star[i] = np.matmul(P[i],mu_star)
-    #    G_star[i] = G[policy[i]]
-    #new_value = np.matmul(P_star,old_value) + G_star
-    #diff = np.abs(new_value-old_value)
+    # mu_star = np.zeros((5,1))
+    # P_star = np.zeros((K,K,1))
+    # G_star = np.zeros((K,1))
+    # for i in range(K):
+    #     mu_star[policy[i]] = 1
+    #     P_star[i] = np.matmul(P[i],mu_star)
+    #     G_star[i] = G[policy[i]]
+    # new_value = np.matmul(P_star,old_value) + G_star
+    # diff = np.abs(new_value-old_value)
 
     while not equal:
         while True:         #policy evaluation
@@ -56,19 +56,24 @@ def Solution(P, G, K, TERMINAL_STATE_INDEX):
             for i in range(K):
                 old_value = np.copy(value_func[i])
                 value_func[i] = 0
-
                 action = policy[i][0]
                 cost = G[i,action]
                 for j in range(K):
                     prob = P[i,j,action]
-                    if prob != 0:
-                        value_func[i] = value_func[i] + prob*value_func[j]
-
+                    value_func[i] = value_func[i] + prob*value_func[j]
+                    print(j)
                 value_func[i] = value_func[i] + cost
-                if old_value == value_func[i] == np.inf:
-                    diff = 0
-                else:
-                    diff = np.abs(value_func[i] - old_value)
+                diff = np.abs(value_func[i] - old_value)
+            # mu_star = np.zeros((5,1))
+            # P_star = np.zeros((K,K,1))
+            # G_star = np.zeros((K,1))
+            # old_value = np.copy(value_func)
+            # for i in range(K):
+            #     mu_star[policy[i]] = 1
+            #     P_star[i] = np.matmul(P[i],mu_star)
+            #     G_star[i] = G[i,policy[i]]
+            # new_value = np.matmul(P_star,old_value) + G_star
+            # diff = np.max(np.abs(new_value-old_value))
                 if diff > maximum:
                     maximum = diff  
             if maximum < epsilon:
@@ -78,12 +83,16 @@ def Solution(P, G, K, TERMINAL_STATE_INDEX):
         equal = True
 
         for i in range(K):
+            vect = np.zeros((5,1))
             for action in range(5):
-                vect = np.zeros((5,1))
+                my_cost = G[i,action]
+                if my_cost == np.inf:
+                    vect[action]=np.inf
+                    continue
                 for j in range(K):
                     if P[i,j,action] != 0:
                         vect[action] = vect[action] + P[i,j,action]*value_func[j]
-                vect[action] = vect[action] + G[i,action]
+                vect[action] = vect[action] + my_cost
             policy[i] = np.argmin(vect)   
             if policy[i] != old_policy[i]:
                 equal = False

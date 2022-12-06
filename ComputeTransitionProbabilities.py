@@ -89,6 +89,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
     M = Constants.M
     P = np.zeros((K,K,L))
     P[i_terminal,i_terminal,4] = 1
+    Constants.cost_dict[(i_terminal,4)] = 0
 
     def move_disturbed(m_arriv, n_arriv, psi_arriv, phi_arriv, azione, p_prec, fought):
       Prb = {}

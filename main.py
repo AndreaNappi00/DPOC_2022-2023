@@ -112,7 +112,10 @@ if __name__ == "__main__":
         print('Solve stochastic shortest path problem')
 
         # TODO: Question d)
+        start = t.time()
         [J_opt, u_opt_ind] = Solution(P, G, K, TERMINAL_STATE_INDEX)
+        end = t.time()
+        print(end - start)
 
         if len(J_opt) != K or len(u_opt_ind) != K:
             print('[ERROR] the size of J and u must be K')
