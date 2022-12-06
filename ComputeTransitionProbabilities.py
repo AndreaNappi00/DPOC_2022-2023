@@ -224,6 +224,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       if num_alien:
             phi2_lotta = phi_b-1
             Constants.cost_dict[(i,act)] = Constants.cost_dict[(i,act)] + Constants.N_a*num_alien
+            
       mine = in_mine(mine_tuple, m_b, n_b, psi_b)          #1c
       if mine:
             phi_b = 1
@@ -259,41 +260,51 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
 
       if i != i_terminal:           # if not in terminal state then execute
             #South
-            action = Constants.SOUTH
 
+            action = Constants.SOUTH
             if not up and not not_accessible(state_dict, m1, n1-1):
+                  Constants.P_nonzero[(i,action)] = []
                   m2 = m1
                   n2 = n1-1 
                   Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
                   for key in Prob_move.keys():
                         P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
+                        Constants.P_nonzero[(key[0],key[2])].append(key[1])
 
             action = Constants.NORTH
             if up and not not_accessible(state_dict, m1, n1+1):
+                  Constants.P_nonzero[(i,action)] = []
                   m2 = m1
                   n2 = n1+1
                   Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
                   for key in Prob_move.keys():
                         P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
+                        Constants.P_nonzero[(key[0],key[2])].append(key[1])
 
             action = Constants.EAST
             if not not_accessible(state_dict, m1+1, n1):
+                  Constants.P_nonzero[(i,action)] = []
                   m2 = m1+1
                   n2 = n1
                   Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
                   for key in Prob_move.keys():
                         P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
+                        Constants.P_nonzero[(key[0],key[2])].append(key[1])
 
             action = Constants.WEST
             if not not_accessible(state_dict, m1-1, n1):
+                  Constants.P_nonzero[(i,action)] = []
                   m2 = m1-1
                   n2 = n1
                   Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
                   for key in Prob_move.keys():
                         P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
+                        Constants.P_nonzero[(key[0],key[2])].append(key[1])
+
             action = Constants.STAY
-            Prob_move =move_algorithm(m1,n1,action,psi1,phi1)
+            Constants.P_nonzero[(i,action)] = []
+            Prob_move = move_algorithm(m1,n1,action,psi1,phi1)
             for key in Prob_move.keys():
                   P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
-
+                  Constants.P_nonzero[(key[0],key[2])].append(key[1])
     return P

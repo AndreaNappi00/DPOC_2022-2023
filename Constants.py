@@ -45,3 +45,4 @@ class Constants:
 
     # Global dictionary
     cost_dict = {}
+    P_nonzero = {}
