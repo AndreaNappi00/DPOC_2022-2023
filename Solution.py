@@ -39,15 +39,13 @@ def Solution(P, G, K, TERMINAL_STATE_INDEX):
 
     epsilon = 0.00001
     it = 0
-    indx = 0
 
-    while not equal and it < 500:
+    while not equal and it<500:
         old_value = np.copy(value_func)
         equal = True
-        indx = indx + 1
         it = it + 1
-        maximum = 0
-        print("indx:" + str(indx))
+        #maximum = 0
+        print("indx:" + str(it))
         for i in range(K):
             if i != TERMINAL_STATE_INDEX:
                 vect = np.zeros((5,1))
@@ -62,9 +60,9 @@ def Solution(P, G, K, TERMINAL_STATE_INDEX):
                 policy[i] = np.argmin(vect)
                 value_func[i] = vect[policy[i]] 
                 diff = np.abs(value_func[i] - old_value[i])
-                maximum = np.max([maximum, diff])
-        if maximum > epsilon:
-            equal = False
+                #maximum = np.max([maximum, diff])
+                if diff > epsilon:
+                    equal = False
 
     # mu_star = np.zeros((5,1))
     # P_star = np.zeros((K,K,1))
