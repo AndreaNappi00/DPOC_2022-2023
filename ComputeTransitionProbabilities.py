@@ -88,8 +88,9 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
     N = Constants.N
     M = Constants.M
     P = np.zeros((K,K,L))
-    P[i_terminal,i_terminal,4] = 1
-    Constants.cost_dict[(i_terminal,4)] = 0
+    for action in range(5):
+      Constants.cost_dict[(i_terminal,action)] = 0
+      P[i_terminal,i_terminal,action] = 1
 
     def move_disturbed(m_arriv, n_arriv, psi_arriv, phi_arriv, azione, p_prec, fought):
       Prb = {}
@@ -97,8 +98,8 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       #j_base = find_state(m_obstacle,n_obstacle,m_base,n_base,0,0)
       j_base = state_dict[(base_tuple[0][0],base_tuple[0][1],0,0)]
       Prb[(i, j_base ,azione)] = 0
-      if i == 49 and azione==4:
-            print("eccomi")
+
+
 
       if north:
             if not not_accessible(state_dict, m_arriv, n_arriv+1):    
@@ -121,11 +122,12 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   j_up = state_dict[(m_arriv,n_arriv+1,phi_end,psi_end)]
                   Prb[(i,j_up,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*((P_PROTECTED**numb_alien)*(1+phi_lotta) - (2+phi_lotta)*phi_lotta)*p_prec
                   if phi_lotta != -1:
-                        j_fight = state_dict[(m_arriv,n_arriv+1,phi_end,psi_end)]
+                        j_fight = state_dict[(m_arriv,n_arriv+1,phi_lotta,psi_end)]
                         Prb[(i,j_fight,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-P_PROTECTED**numb_alien)*p_prec
             else:       #nord leads to collision and so to start
                   Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
-                  Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
+                  if not fought:
+                        Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
 
       if not north:
             if not not_accessible(state_dict, m_arriv, n_arriv-1):    #south
@@ -174,7 +176,11 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   phi_lotta = -1
             j_right = state_dict[(m_arriv+1,n_arriv,phi_end,psi_end)]
 
-            Prb[(i,j_right,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*((P_PROTECTED**numb_alien)*(1+phi_lotta) - (2+phi_lotta)*phi_lotta)*p_prec
+            if j_right == j_base:
+                  Prb[(i,j_right,azione)] = Prb[(i,j_right,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*((P_PROTECTED**numb_alien)*(1+phi_lotta) - (2+phi_lotta)*phi_lotta)*p_prec
+            else:
+                  Prb[(i,j_right,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*((P_PROTECTED**numb_alien)*(1+phi_lotta) - (2+phi_lotta)*phi_lotta)*p_prec
+            
             if phi_lotta != -1:
                   j_fight = state_dict[(m_arriv+1,n_arriv,phi_lotta,psi_end)]
                   Prb[(i,j_fight,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-P_PROTECTED**numb_alien)*p_prec
@@ -201,7 +207,11 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   phi_lotta = -1
             j_left = state_dict[(m_arriv-1,n_arriv,phi_end,psi_end)]
 
-            Prb[(i,j_left,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*((P_PROTECTED**numb_alien)*(1+phi_lotta) - (2+phi_lotta)*phi_lotta)*p_prec
+            if j_left == j_base:
+                  Prb[(i,j_left,azione)] = Prb[(i,j_left,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*((P_PROTECTED**numb_alien)*(1+phi_lotta) - (2+phi_lotta)*phi_lotta)*p_prec
+            else:
+                  Prb[(i,j_left,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*((P_PROTECTED**numb_alien)*(1+phi_lotta) - (2+phi_lotta)*phi_lotta)*p_prec
+            
             if phi_lotta != -1:
                   j_fight = state_dict[(m_arriv-1,n_arriv,phi_lotta,psi_end)]
                   Prb[(i,j_fight,azione)] = ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*(1-P_PROTECTED**numb_alien)*p_prec
@@ -258,6 +268,8 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       n1=stateSpace[i][1]
       phi1=stateSpace[i][2]
       psi1=stateSpace[i][3]
+      if i == 119:
+            print('stop')
       up = possible_to_walk_up_upper(m1,n1,psi1)
 
       if i != i_terminal:           # if not in terminal state then execute

@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.io
+import scipy.io as spio
 from GenerateWorld import *
 from MakePlots import *
 import time as t
@@ -107,6 +107,21 @@ if __name__ == "__main__":
         G = np.ones((K, Constants.L))*np.inf
 
     # Solve the stochastic shortest path problem
+    
+    mat = spio.loadmat('exampleG_2.mat', squeeze_me=True)
+    G_sol = mat['G']
+    for i in range(K):
+        for j in range(5):
+            if np.abs(G_sol[i,j] - G[i,j]) > 0.1:
+                print(i,j)
+
+    mat = spio.loadmat('exampleP_2.mat', squeeze_me=True)
+    P_sol = mat['P']
+    for i in range(K):
+        for k in range(K):
+            for j in range(5):
+                if np.abs(P_sol[i,k,j] - P[i,k,j]) > 0.00001:
+                    print(i,k,j)
 
     if SolutionImplemented:
         print('Solve stochastic shortest path problem')
