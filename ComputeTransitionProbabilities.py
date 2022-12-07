@@ -97,6 +97,8 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       #j_base = find_state(m_obstacle,n_obstacle,m_base,n_base,0,0)
       j_base = state_dict[(base_tuple[0][0],base_tuple[0][1],0,0)]
       Prb[(i, j_base ,azione)] = 0
+      if i == 49 and azione==4:
+            print("eccomi")
 
       if north:
             if not not_accessible(state_dict, m_arriv, n_arriv+1):    

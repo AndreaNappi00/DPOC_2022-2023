@@ -30,7 +30,7 @@ if __name__ == "__main__":
         map_world = GenerateWorld(Constants.M, Constants.N)
     else:
         # We can load a pre-generated map_world
-        data = scipy.io.loadmat('exampleWorld_1.mat')
+        data = scipy.io.loadmat('exampleWorld_2.mat')
         map_world = data["map"]
     MakePlots(map_world)
 
@@ -131,4 +131,3 @@ if __name__ == "__main__":
 
     # display graphs
     plt.show()
-

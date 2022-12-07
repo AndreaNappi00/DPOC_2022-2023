@@ -37,7 +37,7 @@ def Solution(P, G, K, TERMINAL_STATE_INDEX):
     policy = 4*np.ones((K,1), dtype=int)
     equal = False
 
-    epsilon = 0.00001
+    epsilon = 0.00000001
     it = 0
 
     while not equal and it<500:
