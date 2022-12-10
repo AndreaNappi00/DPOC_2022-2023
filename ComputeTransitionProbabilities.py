@@ -1,7 +1,9 @@
 import numpy as np
 import scipy
 from Constants import *
-  
+cost_dict = {}
+P_nonzero = {}
+
 def check_if_portal(portal_pos,m1,n1):
       return (m1,n1) in portal_pos
 def possible_to_walk_up_upper(m,n, psi):
@@ -89,7 +91,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
     M = Constants.M
     P = np.zeros((K,K,L))
     for action in range(5):
-      Constants.cost_dict[(i_terminal,action)] = 0
+      cost_dict[(i_terminal,action)] = 0
       P[i_terminal,i_terminal,action] = 1
 
     def move_disturbed(m_arriv, n_arriv, psi_arriv, phi_arriv, azione, p_prec, fought):
@@ -112,7 +114,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   if numb_alien:
                         phi_lotta = phi_end-1
                         if not fought:
-                              Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_a*numb_alien*(1-(1-S)*psi_end)*P_DISTURBED/3
+                              cost_dict[(i,azione)] = cost_dict[(i,azione)] + Constants.N_a*numb_alien*(1-(1-S)*psi_end)*P_DISTURBED/3
 
                   mine = in_mine(mine_tuple, m_arriv, n_arriv+1, psi_end)          #1c
                   if mine:
@@ -127,7 +129,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
             else:       #nord leads to collision and so to start
                   Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
                   if not fought:
-                        Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
+                        cost_dict[(i,azione)] = cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
 
       if not north:
             if not not_accessible(state_dict, m_arriv, n_arriv-1):    #south
@@ -140,7 +142,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
                   if numb_alien:
                         phi_lotta = phi_end-1
                         if not fought:
-                              Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_a*numb_alien*(1-(1-S)*psi_end)*P_DISTURBED/3
+                              cost_dict[(i,azione)] = cost_dict[(i,azione)] + Constants.N_a*numb_alien*(1-(1-S)*psi_end)*P_DISTURBED/3
 
                   mine = in_mine(mine_tuple, m_arriv, n_arriv-1, psi_end)          #1c
                   if mine:
@@ -155,7 +157,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
             else:       #south leads to collision and so to start
                   Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
                   if not fought:
-                        Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
+                        cost_dict[(i,azione)] = cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
             
       
       if not not_accessible(state_dict, m_arriv+1, n_arriv):    #right
@@ -168,7 +170,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
             if numb_alien:
                   phi_lotta = phi_end-1
                   if not fought:
-                        Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_a*numb_alien*(1-(1-S)*psi_end)*P_DISTURBED/3
+                        cost_dict[(i,azione)] = cost_dict[(i,azione)] + Constants.N_a*numb_alien*(1-(1-S)*psi_end)*P_DISTURBED/3
 
             mine = in_mine(mine_tuple, m_arriv+1, n_arriv, psi_end)          #1c
             if mine:
@@ -187,7 +189,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       else:       #right leads to collision and so to start
             Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
             if not fought:
-                  Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
+                  cost_dict[(i,azione)] = cost_dict[(i,azione)] + Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3
 
       if not not_accessible(state_dict, m_arriv-1, n_arriv):      #left
             port = check_if_portal(portal_tuple, m_arriv-1, n_arriv)        #1a
@@ -199,7 +201,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
             if numb_alien:
                   phi_lotta = phi_end-1
                   if not fought:
-                        Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + Constants.N_a*numb_alien*(1-(1-S)*psi_end)*P_DISTURBED/3
+                        cost_dict[(i,azione)] = cost_dict[(i,azione)] + Constants.N_a*numb_alien*(1-(1-S)*psi_end)*P_DISTURBED/3
 
             mine = in_mine(mine_tuple, m_arriv-1, n_arriv, psi_end)          #1c
             if mine:
@@ -218,7 +220,7 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       else:       #left leads to collision and so to start
             Prb[(i,j_base,azione)] = Prb[(i,j_base,azione)] + ((1-(1-S)*psi_arriv)*P_DISTURBED/3)*p_prec
             if not fought:
-                  Constants.cost_dict[(i,azione)] = Constants.cost_dict[(i,azione)] + (Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3)
+                  cost_dict[(i,azione)] = cost_dict[(i,azione)] + (Constants.N_b*(1-(1-S)*psi_arriv)*P_DISTURBED/3)
 
       return Prb
 
@@ -230,12 +232,12 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       #1
       portal = check_if_portal(portal_tuple, m_b, n_b)        #1a
       psi_b = psi_a*(1-portal) + (1-psi_a)*portal
-      Constants.cost_dict[(i,act)] = (1-(1-S)*psi_b)*P_DISTURBED + 1
+      cost_dict[(i,act)] = (1-(1-S)*psi_b)*P_DISTURBED + 1
 
       num_alien = near_alien(m_alien, n_alien, m_b, n_b, psi_b)     #1b
       if num_alien:
             phi2_lotta = phi_b-1
-            Constants.cost_dict[(i,act)] = Constants.cost_dict[(i,act)] + Constants.N_a*num_alien
+            cost_dict[(i,act)] = cost_dict[(i,act)] + Constants.N_a*num_alien
             
       mine = in_mine(mine_tuple, m_b, n_b, psi_b)          #1c
       if mine:
@@ -277,48 +279,48 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
 
             action = Constants.SOUTH
             if not up and not not_accessible(state_dict, m1, n1-1):
-                  Constants.P_nonzero[(i,action)] = []
+                  P_nonzero[(i,action)] = []
                   m2 = m1
                   n2 = n1-1 
                   Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
                   for key in Prob_move.keys():
                         P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
-                        Constants.P_nonzero[(key[0],key[2])].append(key[1])
+                        P_nonzero[(key[0],key[2])].append(key[1])
 
             action = Constants.NORTH
             if up and not not_accessible(state_dict, m1, n1+1):
-                  Constants.P_nonzero[(i,action)] = []
+                  P_nonzero[(i,action)] = []
                   m2 = m1
                   n2 = n1+1
                   Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
                   for key in Prob_move.keys():
                         P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
-                        Constants.P_nonzero[(key[0],key[2])].append(key[1])
+                        P_nonzero[(key[0],key[2])].append(key[1])
 
             action = Constants.EAST
             if not not_accessible(state_dict, m1+1, n1):
-                  Constants.P_nonzero[(i,action)] = []
+                  P_nonzero[(i,action)] = []
                   m2 = m1+1
                   n2 = n1
                   Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
                   for key in Prob_move.keys():
                         P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
-                        Constants.P_nonzero[(key[0],key[2])].append(key[1])
+                        P_nonzero[(key[0],key[2])].append(key[1])
 
             action = Constants.WEST
             if not not_accessible(state_dict, m1-1, n1):
-                  Constants.P_nonzero[(i,action)] = []
+                  P_nonzero[(i,action)] = []
                   m2 = m1-1
                   n2 = n1
                   Prob_move = move_algorithm(m2,n2,action,psi1,phi1)
                   for key in Prob_move.keys():
                         P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
-                        Constants.P_nonzero[(key[0],key[2])].append(key[1])
+                        P_nonzero[(key[0],key[2])].append(key[1])
 
             action = Constants.STAY
-            Constants.P_nonzero[(i,action)] = []
+            P_nonzero[(i,action)] = []
             Prob_move = move_algorithm(m1,n1,action,psi1,phi1)
             for key in Prob_move.keys():
                   P[key[0], key[1], key[2]] = P[key[0], key[1], key[2]] + Prob_move[key]
-                  Constants.P_nonzero[(key[0],key[2])].append(key[1])
+                  P_nonzero[(key[0],key[2])].append(key[1])
     return P

@@ -124,6 +124,7 @@ if __name__ == "__main__":
     #             if np.abs(P_sol[i,k,j] - P[i,k,j]) > 0.00001:
     #                 print(i,k,j)
 
+
     if SolutionImplemented:
         print('Solve stochastic shortest path problem')
 
@@ -139,8 +140,25 @@ if __name__ == "__main__":
             # Plot results
             print('Plot results')
             MakePlots(map_world, stateSpace, J_opt, u_opt_ind, TERMINAL_STATE_INDEX, "Solution")
-
-    print('time to compute j')
+    
+    #SOLUTION TEST
+    # spio.savemat('GT_value_2', {'J_opt': J_opt})
+    # spio.savemat('GT_policy_2', {'u_opt_ind': u_opt_ind})
+    err=0
+    pos = []
+    err_J=0
+    mat = spio.loadmat('GT_policy_2', squeeze_me=True)
+    my_policy = mat['u_opt_ind']
+    mat1 = spio.loadmat('GT_value_2', squeeze_me=True)
+    my_cost = mat1['J_opt']
+    for i in range(K):
+        if my_policy[i]!=u_opt_ind[i]:
+            err= err+1
+            pos.append(i)
+    for i in range(K):
+        err_J = err_J+ 1/K*(J_opt[i]-my_cost[i])**2
+    print(err,err_J)
+    print(pos)
     
     # Terminated
     print('Terminated - close plots to exit program')

@@ -1,6 +1,7 @@
 import numpy as np
 import scipy
 from Constants import *
+from ComputeTransitionProbabilities import cost_dict
 
 def ComputeStageCosts(stateSpace, map_world, K):
     """
@@ -27,7 +28,7 @@ def ComputeStageCosts(stateSpace, map_world, K):
     
     G = np.inf*np.ones((K,Constants.L))
 
-    for key in Constants.cost_dict.keys():
-      G[key[0], key[1]] = Constants.cost_dict[key]
+    for key in cost_dict.keys():
+      G[key[0], key[1]] = cost_dict[key]
 
     return G

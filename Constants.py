@@ -1,8 +1,8 @@
 class Constants:
     #M = 19
     #N = 11
-    M = 19
-    N = 11
+    M = 20
+    N = 10
     mapSize = [M, N]
 
     # Plotting options
@@ -42,7 +42,3 @@ class Constants:
     # Index of dimensions
     UPPER = 0
     LOWER = 1
-
-    # Global dictionary
-    cost_dict = {}
-    P_nonzero = {}
