@@ -24,6 +24,8 @@ def ComputeTerminalStateIndex(stateSpace, map_world):
 
     """
     m,n = np.where(map_world == Constants.LAB)
+    m = int(m)
+    n = int(n)
+    index = np.where((stateSpace == np.array([m,n,1,0])).all(axis=1))[0][0]
 
-
-    return np.where((stateSpace == np.array([m,n,1,0])).all(axis=1))[0][0]
+    return index

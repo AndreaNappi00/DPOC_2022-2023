@@ -270,13 +270,10 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
       n1=stateSpace[i][1]
       phi1=stateSpace[i][2]
       psi1=stateSpace[i][3]
-      if i == 119:
-            print('stop')
       up = possible_to_walk_up_upper(m1,n1,psi1)
 
       if i != i_terminal:           # if not in terminal state then execute
             #South
-
             action = Constants.SOUTH
             if not up and not not_accessible(state_dict, m1, n1-1):
                   P_nonzero[(i,action)] = []

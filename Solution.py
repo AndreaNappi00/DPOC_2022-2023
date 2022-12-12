@@ -126,14 +126,13 @@ def Solution(P, G, K, TERMINAL_STATE_INDEX):
     #                 equal = False
 
     #LINEAR PROGRAM
-    c = -np.ones(K)
+    c = [-1]*K
     c[TERMINAL_STATE_INDEX] = 0
     # ub = np.inf*np.ones(K)
     # ub[TERMINAL_STATE_INDEX] = 0
     #bound = opt.Bounds(lb=np.zeros(K), ub=ub)
-    z = [(0,np.inf)] * K
-    z[TERMINAL_STATE_INDEX] = (0,0)
-    bound = np.array(z)
+    bound = [(0,np.inf)] * K
+    bound[TERMINAL_STATE_INDEX] = (0,0)
     #constraint_list = []
     
     A = []
@@ -149,9 +148,9 @@ def Solution(P, G, K, TERMINAL_STATE_INDEX):
                     for j in P_nonzero[(i,action)]:
                         a[j] = a[j] - P[i,j,action]
                     A.append(a)
-    A = np.array(A)
-    b = np.array(b)
-    res = opt.linprog(c=c, A_ub=A, b_ub=b,bounds = bound, integrality=2*np.ones(K))
+    #A = np.array(A)
+    #b = np.array(b)
+    res = opt.linprog(c=c, A_ub=A, b_ub=b,bounds = bound,integrality=[2]*K)
     value_func = res.x
     for i in range(K):
         if i != TERMINAL_STATE_INDEX:

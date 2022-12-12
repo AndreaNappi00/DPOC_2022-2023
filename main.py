@@ -30,7 +30,7 @@ if __name__ == "__main__":
         map_world = GenerateWorld(Constants.M, Constants.N)
     else:
         # We can load a pre-generated map_world
-        data = scipy.io.loadmat('exampleWorld_2.mat')
+        data = scipy.io.loadmat('exampleWorld_3.mat')
         map_world = data["map"]
     MakePlots(map_world)
 
@@ -109,14 +109,14 @@ if __name__ == "__main__":
     # Solve the stochastic shortest path problem
     
     #MATRIX CHECK
-    # mat = spio.loadmat('exampleG_2.mat', squeeze_me=True)
+    # mat = spio.loadmat('exampleG_3.mat', squeeze_me=True)
     # G_sol = mat['G']
     # for i in range(K):
     #     for j in range(5):
     #         if np.abs(G_sol[i,j] - G[i,j]) > 0.1:
     #             print(i,j)
 
-    # mat = spio.loadmat('exampleP_2.mat', squeeze_me=True)
+    # mat = spio.loadmat('exampleP_3.mat', squeeze_me=True)
     # P_sol = mat['P']
     # for i in range(K):
     #     for k in range(K):
