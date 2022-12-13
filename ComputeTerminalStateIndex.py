@@ -3,9 +3,6 @@ import numpy as np
 import scipy
 from Constants import *
 
-
-
-
 def ComputeTerminalStateIndex(stateSpace, map_world):
     """
     Computes the index of the terminal state in the stateSpace matrix
