@@ -38,102 +38,11 @@ def Solution(P, G, K, TERMINAL_STATE_INDEX):
     policy = 4*np.ones((K,1), dtype=int)
     equal = False
 
-    epsilon = 1
-    it = 0
-
-    # # POLICY ITERATION
-    # mu_star = np.zeros((5,1))
-    # P_star = np.zeros((K,K,1))
-    # G_star = np.zeros((K,1))
-    # indx_tot = 0
-    # maximum = 0
-
-    # while not equal:
-    #     #epsilon = epsilon*0.9
-    #     indx_tot = indx_tot + 1
-    #     indx_evaluation = 0
-    #     old_max = 0
-    #     print("index_total:" + str(indx_tot))
-    #     while True:         #policy evaluation
-    #         indx_evaluation = indx_evaluation + 1
-    #         print("indx_evaluate:" +  str(indx_evaluation))
-    #         old_max = maximum
-    #         maximum = 0
-    #         diff = 0
-    #         old_value = np.copy(value_func)
-    #         for i in range(K):
-    #             if i != TERMINAL_STATE_INDEX:
-    #                 current_value = 0
-    #                 action = policy[i][0]
-    #                 cost = G[i,action]
-    #                 for j in P_nonzero[(i,action)]:
-    #                     prob = P[i,j,action]
-    #                     current_value = current_value + prob*old_value[j]
-    #                 current_value = current_value + cost
-    #                 diff = np.abs(current_value - old_value[i])
-    #                 value_func[i] = current_value
-    #                 if (diff > maximum):
-    #                     maximum = diff 
-    #         print(maximum) 
-    #         if (maximum < epsilon) or (old_max-maximum<0.1):
-    #             break 
-
-    #     old_policy = np.copy(policy)
-    #     equal = True
-
-    #     for i in range(K):
-    #         vect = np.zeros((5,1))
-    #         for action in range(5):
-    #             if (i,action) in P_nonzero:
-    #                 my_cost = G[i,action]
-    #                 if my_cost == np.inf:
-    #                     vect[action]=np.inf
-    #                     continue
-    #                 for j in P_nonzero[(i,action)]:
-    #                     if P[i,j,action] != 0:
-    #                         vect[action] = vect[action] + P[i,j,action]*value_func[j]
-    #                 vect[action] = vect[action] + my_cost
-    #             else:
-    #                 vect[action] = np.inf
-    #         policy[i] = np.argmin(vect)   
-    #         if policy[i] != old_policy[i]:
-    #             equal = False
-
-    # # VALUE ITERATION
-    # equal = False
-    # while not equal:
-    #     old_value = np.copy(value_func)
-    #     equal = True
-    #     it = it + 1
-    #     #maximum = 0
-    #     print("indx:" + str(it))
-    #     for i in range(K):
-    #         if i != TERMINAL_STATE_INDEX:
-    #             vect = np.zeros((5,1))
-    #             for action in range(5):
-    #                 my_cost = G[i,action]
-    #                 if my_cost == np.inf:
-    #                     vect[action]=np.inf
-    #                     continue
-    #                 for j in P_nonzero[(i,action)]:
-    #                     vect[action] = vect[action] + P[i,j,action]*value_func[j]
-    #                 vect[action] = vect[action] + my_cost
-    #             policy[i] = np.argmin(vect)
-    #             value_func[i] = vect[policy[i]] 
-    #             diff = np.abs(value_func[i] - old_value[i])
-    #             #maximum = np.max([maximum, diff])
-    #             if diff > epsilon:
-    #                 equal = False
-
     #LINEAR PROGRAM
     c = [-1]*K
     c[TERMINAL_STATE_INDEX] = 0
-    # ub = np.inf*np.ones(K)
-    # ub[TERMINAL_STATE_INDEX] = 0
-    #bound = opt.Bounds(lb=np.zeros(K), ub=ub)
     bound = [(0,np.inf)] * K
     bound[TERMINAL_STATE_INDEX] = (0,0)
-    #constraint_list = []
     
     A = []
     b = []
@@ -147,9 +56,7 @@ def Solution(P, G, K, TERMINAL_STATE_INDEX):
                     b.append(ub)
                     for j in P_nonzero[(i,action)]:
                         a[j] = a[j] - P[i,j,action]
-                    A.append(a)
-    #A = np.array(A)
-    #b = np.array(b)
+                    A.append(a)    
     res = opt.linprog(c=c, A_ub=A, b_ub=b,bounds = bound,integrality=[2]*K)
     value_func = res.x
     for i in range(K):
@@ -165,6 +72,5 @@ def Solution(P, G, K, TERMINAL_STATE_INDEX):
                     sum_prob = sum_prob + P[i,j,action]*value_func[j]
                 vect[action] = cost+sum_prob
             policy[i] = np.argmin(vect)
-                    
 
     return value_func, policy
