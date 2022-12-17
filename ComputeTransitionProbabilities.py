@@ -39,9 +39,6 @@ def in_mine(mine_pos, m1, n1, psi1):
             return (m1,n1) in mine_pos
       return False
 def not_accessible(d,m2,n2):
-      # if m2 == Constants.M or m2 == -1 or n2 == Constants.N or n2 == -1:
-      #       return True
-      # return check_if_obstacle(m,n,m2,n2)
       if not ((m2,n2,0,0) in d.keys()):
             return True
       return False
@@ -81,14 +78,11 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
     mine_tuple = tuple(zip(m_n_mine[0], m_n_mine[1]))
     state_dict = stateSpace_to_dict()
     m_alien, n_alien = np.where(map_world == Constants.ALIEN)
-   # i_terminal = find_state(m_obstacle,n_obstacle, m_lab,n_lab,1,0)
     i_terminal = state_dict[(lab_tuple[0][0],lab_tuple[0][1],1,0)]
     P_DISTURBED = Constants.P_DISTURBED
     P_PROTECTED = Constants.P_PROTECTED
     S = Constants.S
     L = Constants.L
-    N = Constants.N
-    M = Constants.M
     P = np.zeros((K,K,L))
     for action in range(5):
       cost_dict[(i_terminal,action)] = 0
@@ -97,11 +91,8 @@ def ComputeTransitionProbabilities(stateSpace, map_world, K):
     def move_disturbed(m_arriv, n_arriv, psi_arriv, phi_arriv, azione, p_prec, fought):
       Prb = {}
       north = possible_to_walk_up_upper(m_arriv,n_arriv,psi_arriv)
-      #j_base = find_state(m_obstacle,n_obstacle,m_base,n_base,0,0)
       j_base = state_dict[(base_tuple[0][0],base_tuple[0][1],0,0)]
       Prb[(i, j_base ,azione)] = 0
-
-
 
       if north:
             if not not_accessible(state_dict, m_arriv, n_arriv+1):    

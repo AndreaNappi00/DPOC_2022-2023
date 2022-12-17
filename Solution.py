@@ -36,7 +36,6 @@ def Solution(P, G, K, TERMINAL_STATE_INDEX):
 
     value_func = np.zeros((K,1))
     policy = 4*np.ones((K,1), dtype=int)
-    equal = False
 
     #LINEAR PROGRAM
     c = [-1]*K

@@ -1,6 +1,4 @@
 class Constants:
-    #M = 19
-    #N = 11
     M = 19
     N = 11
     mapSize = [M, N]
