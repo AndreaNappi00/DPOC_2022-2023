@@ -17,7 +17,7 @@ if __name__ == "__main__":
     Set to true to generate a random map of size mapSize, else set to false
     to load the pre-existing example map
     """
-    generateRandomWorld = True
+    generateRandomWorld = False
 
     """
     Generate map
@@ -30,7 +30,7 @@ if __name__ == "__main__":
         map_world = GenerateWorld(Constants.M, Constants.N)
     else:
         # We can load a pre-generated map_world
-        data = scipy.io.loadmat('exampleWorld_1.mat')
+        data = scipy.io.loadmat('exampleWorld_3.mat')
         map_world = data["map"]
     MakePlots(map_world)
 
@@ -160,7 +160,7 @@ if __name__ == "__main__":
     #     err_J = err_J+ 1/K*(J_opt[i]-my_cost[i])**2
     # print(err,err_J)
     # print(pos)
-    
+
     # Terminated
     print('Terminated - close plots to exit program')
 
