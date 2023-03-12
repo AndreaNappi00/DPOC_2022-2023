@@ -31,8 +31,6 @@ def Solution(P, G, K, TERMINAL_STATE_INDEX):
                 terminal state is arbitrary (for example: STAY).
 
     """
-    
-    #Do you need to do something with the terminal state before solving the problem?
 
     value_func = np.zeros((K,1))
     policy = 4*np.ones((K,1), dtype=int)
