@@ -9,4 +9,4 @@ matrix P and the cost matrix G. The incredibly fast result was obtained mainly d
 
 The output is the optimal cost vector and the optimal input vector, which describe the optimal cost and optimal input for each tile in each map.
 
-![Image](results.png)
+![Image](Results.png)
