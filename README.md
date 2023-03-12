@@ -10,3 +10,5 @@ matrix P and the cost matrix G. The incredibly fast result was obtained mainly d
 The output is the optimal cost vector and the optimal input vector, which describe the optimal cost and optimal input for each tile in each map.
 
 ![Image](Results.png)
+
+The skeleton code for plotting was provided by ETH. To execute on your laptop just run main.py
